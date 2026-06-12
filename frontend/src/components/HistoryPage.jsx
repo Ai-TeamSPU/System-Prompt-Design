@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { supabase } from '../supabaseClient';
 import { Search, Filter, Copy, Clock, User, Download, Cpu, Building2, Briefcase } from 'lucide-react';
 
 const HistoryPage = ({ onClonePrompt }) => {
   const [usecases, setUsecases] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [deleteConfirmId, setDeleteConfirmId] = useState(null);
 
   // Filters
   const [filterTool, setFilterTool] = useState('All');
@@ -16,26 +18,36 @@ const HistoryPage = ({ onClonePrompt }) => {
     fetchHistory();
   }, []);
 
-  const fetchHistory = async () => {
+  const fetchHistory = () => {
     setIsLoading(true);
     try {
-      // ดึงข้อมูลเฉพาะที่มีการสร้าง prompt ไว้
-      const { data, error } = await supabase
-        .from('usecases')
-        .select('*')
-        .not('generated_prompt', 'is', null)
-        .order('date', { ascending: false });
-
-      if (error) {
-        console.error("Error fetching history:", error);
-      } else {
-        setUsecases(data || []);
+      const historyStr = localStorage.getItem('promptHistory');
+      let historyArr = [];
+      if (historyStr) {
+        historyArr = JSON.parse(historyStr);
       }
+      setUsecases(historyArr);
     } catch (error) {
       console.error("Fetch history error:", error);
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleDeleteHistory = (id) => {
+    setDeleteConfirmId(id);
+  };
+
+  const confirmDelete = () => {
+    if (!deleteConfirmId) return;
+    const historyStr = localStorage.getItem('promptHistory');
+    if (historyStr) {
+      const historyArr = JSON.parse(historyStr);
+      const newArr = historyArr.filter(item => item.id !== deleteConfirmId);
+      localStorage.setItem('promptHistory', JSON.stringify(newArr));
+      setUsecases(newArr);
+    }
+    setDeleteConfirmId(null);
   };
 
   // ดึงรายชื่อ Tool, Base, Department แบบ Unique สำหรับทำ Dropdown
@@ -159,13 +171,23 @@ const HistoryPage = ({ onClonePrompt }) => {
                     </div>
                   </div>
 
-                  <button
-                    className="btn btn-primary"
-                    onClick={() => onClonePrompt(uc)}
-                    style={{ flex: 'none', width: 'max-content', display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.6rem 1.2rem', fontSize: '0.95rem' }}
-                  >
-                    <Copy size={16} /> Clone Prompt
-                  </button>
+                  <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    <button
+                      className="btn btn-secondary"
+                      onClick={() => handleDeleteHistory(uc.id)}
+                      style={{ flex: 'none', width: 'max-content', display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.6rem 1.2rem', fontSize: '0.95rem', color: '#ff4b4b' }}
+                      title="ลบประวัตินี้"
+                    >
+                      ลบ
+                    </button>
+                    <button
+                      className="btn btn-primary"
+                      onClick={() => onClonePrompt(uc)}
+                      style={{ flex: 'none', width: 'max-content', display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.6rem 1.2rem', fontSize: '0.95rem' }}
+                    >
+                      <Copy size={16} /> Clone Prompt
+                    </button>
+                  </div>
                 </div>
 
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: '0.5rem' }}>
@@ -192,8 +214,8 @@ const HistoryPage = ({ onClonePrompt }) => {
                     </span>
                   )}
                   {uc.departments_used && uc.departments_used.map(dept => (
-                    <span 
-                      key={dept.id} 
+                    <span
+                      key={dept.id}
                       onClick={() => setFilterDepartment(dept.name)}
                       style={{ background: 'rgba(255,255,255,0.05)', color: 'var(--text-secondary)', padding: '0.3rem 0.8rem', borderRadius: '20px', fontSize: '0.8rem', border: '1px solid var(--glass-border)', cursor: 'pointer', transition: 'all 0.2s' }}
                       onMouseOver={(e) => { e.target.style.background = 'rgba(255,255,255,0.1)'; e.target.style.color = 'white'; }}
@@ -215,6 +237,24 @@ const HistoryPage = ({ onClonePrompt }) => {
           </div>
         )}
       </div>
+
+      {deleteConfirmId && createPortal(
+        <div className="modal-overlay" onClick={() => setDeleteConfirmId(null)} style={{ zIndex: 2000 }}>
+          <div className="modal-content glass-panel" style={{ maxWidth: '400px', textAlign: 'center', background: 'var(--bg-color)' }} onClick={e => e.stopPropagation()}>
+            <h3 style={{ color: '#ff4b4b', marginBottom: '1rem', fontSize: '1.4rem' }}>ต้องการลบใช่หรือไม่?</h3>
+            <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>ประวัติการสร้าง Prompt นี้จะถูกลบออกไปจากเครื่องของคุณและไม่สามารถกู้คืนได้</p>
+            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+              <button className="btn btn-secondary" style={{ flex: 1 }} onClick={() => setDeleteConfirmId(null)}>
+                ยกเลิก
+              </button>
+              <button className="btn btn-primary" style={{ flex: 1, background: '#ff4b4b', borderColor: '#ff4b4b' }} onClick={confirmDelete}>
+                ยืนยันการลบ
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
     </div>
   );
 };

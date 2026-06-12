@@ -4,6 +4,7 @@ import { X, Upload, Image as ImageIcon } from 'lucide-react';
 const UsecaseModal = ({ isOpen, onClose, onSubmit }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [author, setAuthor] = useState('');
   const [imagePreview, setImagePreview] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -25,12 +26,13 @@ const UsecaseModal = ({ isOpen, onClose, onSubmit }) => {
     if (!title || !description) return;
     
     setIsSubmitting(true);
-    await onSubmit({ title, description, image: imagePreview });
+    await onSubmit({ title, description, image: imagePreview, author });
     setIsSubmitting(false);
     
     // Reset form
     setTitle('');
     setDescription('');
+    setAuthor('');
     setImagePreview(null);
     onClose();
   };
@@ -46,6 +48,18 @@ const UsecaseModal = ({ isOpen, onClose, onSubmit }) => {
         </div>
         
         <form onSubmit={handleSubmit} className="modal-body">
+          <div className="form-group">
+            <label>ชื่อของคุณ (นามแฝง)</label>
+            <input 
+              type="text" 
+              placeholder="เช่น: สมชาย, Dev AI" 
+              value={author}
+              onChange={(e) => setAuthor(e.target.value)}
+              required
+              className="form-input"
+            />
+          </div>
+
           <div className="form-group">
             <label>Usecase Title</label>
             <input 

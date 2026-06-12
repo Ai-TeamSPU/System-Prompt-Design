@@ -1,8 +1,18 @@
 import React, { useState } from 'react';
-import { X, Sparkles, RefreshCw } from 'lucide-react';
+import { createPortal } from 'react-dom';
+import { X, Sparkles, RefreshCw, AlertCircle } from 'lucide-react';
 
-const CupPreview = ({ selectedTool, selectedBase, selectedDepartments, onClear, onDropItem, onRemoveTool, onRemoveBase, onRemoveDepartment }) => {
+const CupPreview = ({ selectedTool, selectedBase, selectedDepartments, onClear, onDropItem, onRemoveTool, onRemoveBase, onRemoveDepartment, onGenerate }) => {
   const [isDragOver, setIsDragOver] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
+
+  const handleGenerateClick = () => {
+    if (!selectedTool || !selectedBase || selectedDepartments.length === 0) {
+      setShowAlert(true);
+    } else {
+      onGenerate();
+    }
+  };
 
   const handleDragOver = (e) => {
     e.preventDefault();
@@ -88,10 +98,24 @@ const CupPreview = ({ selectedTool, selectedBase, selectedDepartments, onClear, 
         <button className="btn btn-secondary" onClick={onClear}>
           <RefreshCw size={18} /> ล้างตัวเลือก
         </button>
-        <button className="btn btn-primary">
-          <Sparkles size={18} /> ดู Prompt
+        <button className="btn btn-primary" onClick={handleGenerateClick}>
+          <Sparkles size={18} /> Create Prompt System for you
         </button>
       </div>
+
+      {showAlert && createPortal(
+        <div className="modal-overlay" onClick={() => setShowAlert(false)} style={{ zIndex: 2000 }}>
+          <div className="modal-content glass-panel" style={{ maxWidth: '400px', textAlign: 'center', background: 'var(--bg-color)' }} onClick={e => e.stopPropagation()}>
+            <AlertCircle size={48} color="#ff4b4b" style={{ margin: '0 auto 1rem auto' }} />
+            <h3 style={{ color: '#ff4b4b', marginBottom: '0.5rem' }}>!!! กรุณาเลือกสิ่งที่ต้องการสร้าง !!!</h3>
+            <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>!! Please select what you wish to create. !!</p>
+            <button className="btn btn-primary" style={{ width: '100%' }} onClick={() => setShowAlert(false)}>
+              ตกลง (OK)
+            </button>
+          </div>
+        </div>,
+        document.body
+      )}
     </div>
   );
 };

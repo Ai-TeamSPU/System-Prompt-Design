@@ -701,6 +701,17 @@ body {
   z-index: 1000;
 }
 
+@keyframes modalPopIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.8) translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
 .modal-content {
   width: 100%;
   max-width: 500px;
@@ -708,6 +719,7 @@ body {
   overflow-y: auto;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
   background: #111a2c;
+  animation: modalPopIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
 
 .modal-header {

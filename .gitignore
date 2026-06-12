@@ -2,3 +2,8 @@ node_modules/
 .env
 dist/
 build/
+คำอธิบาย/Usecase_vs_History.md
+คำอธิบาย/To_Do_For_Docs.md
+คำอธิบาย/Supabase_Deployment_Error.md
+คำอธิบาย/feturePopular Prompt.md
+คำอธิบาย/Docs_Tutorial.md

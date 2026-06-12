@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, LayoutGrid, Image as ImageIcon, X } from 'lucide-react';
+import { Plus, LayoutGrid, Image as ImageIcon, X, Heart, Copy } from 'lucide-react';
 import UsecaseModal from './UsecaseModal';
 import { supabase } from '../supabaseClient';
 
@@ -8,6 +8,16 @@ const UsecasesPage = ({ currentPrompt, currentTool, currentBase, currentDepartme
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDetailUsecase, setSelectedDetailUsecase] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [likedUsecases, setLikedUsecases] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
+
+  useEffect(() => {
+    const storedLikes = localStorage.getItem('likedUsecases');
+    if (storedLikes) {
+      setLikedUsecases(JSON.parse(storedLikes));
+    }
+  }, []);
 
   // Fetch usecases from Supabase
   const fetchUsecases = async () => {
@@ -36,25 +46,50 @@ const UsecasesPage = ({ currentPrompt, currentTool, currentBase, currentDepartme
     fetchUsecases();
   }, []);
 
+  const handleLike = async (usecaseId, currentLikes) => {
+    const isLiked = likedUsecases.includes(usecaseId);
+    const newLikes = isLiked ? Math.max((currentLikes || 0) - 1, 0) : (currentLikes || 0) + 1;
+
+    // Optimistic UI update
+    setUsecases(prev => prev.map(uc => uc.id === usecaseId ? { ...uc, likes: newLikes } : uc));
+    
+    // Update LocalStorage
+    let newLikedArray;
+    if (isLiked) {
+      newLikedArray = likedUsecases.filter(id => id !== usecaseId);
+    } else {
+      newLikedArray = [...likedUsecases, usecaseId];
+    }
+    setLikedUsecases(newLikedArray);
+    localStorage.setItem('likedUsecases', JSON.stringify(newLikedArray));
+
+    try {
+      const { error } = await supabase
+        .from('usecases')
+        .update({ likes: newLikes })
+        .eq('id', usecaseId);
+
+      if (error) {
+        console.error("Error updating likes:", error);
+        // Revert on error
+        setUsecases(prev => prev.map(uc => uc.id === usecaseId ? { ...uc, likes: currentLikes } : uc));
+        setLikedUsecases(likedUsecases);
+        localStorage.setItem('likedUsecases', JSON.stringify(likedUsecases));
+      }
+    } catch (err) {
+      console.error("Failed to update like", err);
+    }
+  };
+
   const handleAddUsecase = async (usecaseData) => {
     try {
-      let name = localStorage.getItem('userNickname');
-      if (!name) {
-        name = window.prompt("กรุณาใส่ชื่อของคุณก่อนบันทึก:");
-        if (name) {
-          localStorage.setItem('userNickname', name);
-        } else {
-          return; // canceled
-        }
-      }
-
       const newUsecase = {
         id: 'uc-' + Date.now(),
         title: usecaseData.title,
         description: usecaseData.description,
         image: usecaseData.image || null,
         date: new Date().toISOString(),
-        created_by: name || 'Guest',
+        created_by: usecaseData.author || 'Guest',
         generated_prompt: currentPrompt !== "Please select a Prompt Base." ? currentPrompt : null,
         tool_used: currentTool || null,
         base_used: currentBase || null,
@@ -106,8 +141,9 @@ const UsecasesPage = ({ currentPrompt, currentTool, currentBase, currentDepartme
           </button>
         </div>
       ) : (
-        <div className="usecase-grid">
-          {usecases.map(uc => (
+        <>
+          <div className="usecase-grid">
+            {usecases.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map(uc => (
             <div key={uc.id} className="usecase-card glass-panel">
               <div className="usecase-image-container">
                 {uc.image ? (
@@ -129,14 +165,78 @@ const UsecasesPage = ({ currentPrompt, currentTool, currentBase, currentDepartme
                 >
                   อ่านรายละเอียด
                 </button>
-                <div className="usecase-meta">
-                  <span style={{ color: 'var(--primary-accent)' }}>👤 โดย: {uc.created_by || 'ไม่ระบุชื่อ'}</span>
-                  <span>{new Date(uc.date).toLocaleDateString()}</span>
+                <div className="usecase-meta" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+                    <span style={{ color: 'var(--primary-accent)' }}>👤 โดย: {uc.created_by || 'ไม่ระบุชื่อ'}</span>
+                    <span>{new Date(uc.date).toLocaleDateString()}</span>
+                  </div>
+                  <button 
+                    onClick={() => handleLike(uc.id, uc.likes)}
+                    className="btn-icon" 
+                    style={{ 
+                      color: likedUsecases.includes(uc.id) ? '#ff4b4b' : 'var(--text-secondary)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.3rem',
+                      width: 'auto',
+                      padding: '0 0.5rem',
+                      borderRadius: '12px'
+                    }}
+                  >
+                    <Heart 
+                      size={20} 
+                      fill={likedUsecases.includes(uc.id) ? '#ff4b4b' : 'transparent'} 
+                      style={{ transition: 'all 0.3s ease' }}
+                    />
+                    <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>{uc.likes || 0}</span>
+                  </button>
                 </div>
               </div>
             </div>
           ))}
-        </div>
+          </div>
+
+          {/* Pagination Controls */}
+          {Math.ceil(usecases.length / itemsPerPage) > 1 && (
+            <div className="pagination" style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '0.3rem', marginTop: '2rem' }}>
+              <button 
+                className="btn btn-secondary" 
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                style={{ padding: '0.3rem 0.6rem', fontSize: '0.85rem' }}
+              >
+                Prev
+              </button>
+              
+              {Array.from({ length: Math.ceil(usecases.length / itemsPerPage) }, (_, i) => i + 1).map(page => (
+                <button
+                  key={page}
+                  className={`btn ${currentPage === page ? 'btn-primary' : 'btn-secondary'}`}
+                  onClick={() => setCurrentPage(page)}
+                  style={{ 
+                    padding: '0.3rem 0.6rem', 
+                    fontSize: '0.85rem',
+                    minWidth: '32px',
+                    background: currentPage === page ? 'var(--primary-accent)' : 'transparent',
+                    color: currentPage === page ? '#000' : 'white',
+                    borderColor: currentPage === page ? 'var(--primary-accent)' : 'var(--glass-border)'
+                  }}
+                >
+                  {page}
+                </button>
+              ))}
+
+              <button 
+                className="btn btn-secondary" 
+                disabled={currentPage === Math.ceil(usecases.length / itemsPerPage)}
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(usecases.length / itemsPerPage)))}
+                style={{ padding: '0.3rem 0.6rem', fontSize: '0.85rem' }}
+              >
+                Next
+              </button>
+            </div>
+          )}
+        </>
       )}
 
       <UsecaseModal
@@ -166,6 +266,27 @@ const UsecasesPage = ({ currentPrompt, currentTool, currentBase, currentDepartme
               <p style={{ color: 'var(--text-secondary)', lineHeight: '1.6', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
                 {selectedDetailUsecase.description}
               </p>
+
+              {selectedDetailUsecase.generated_prompt && (
+                <div style={{ marginTop: '1.5rem', padding: '1rem', background: 'var(--input-bg)', borderRadius: '8px', border: '1px solid var(--glass-border)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.8rem' }}>
+                    <h4 style={{ color: 'var(--primary-accent)', margin: 0 }}>Generated Prompt</h4>
+                    <button 
+                      className="btn btn-secondary" 
+                      style={{ padding: '0.3rem 0.6rem', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+                      onClick={() => {
+                        navigator.clipboard.writeText(selectedDetailUsecase.generated_prompt);
+                        alert('Copied to clipboard!');
+                      }}
+                    >
+                      <Copy size={14} /> Copy
+                    </button>
+                  </div>
+                  <pre style={{ margin: 0, whiteSpace: 'pre-wrap', wordBreak: 'break-word', fontSize: '0.9rem', color: 'var(--text-primary)', fontFamily: 'inherit' }}>
+                    {selectedDetailUsecase.generated_prompt}
+                  </pre>
+                </div>
+              )}
             </div>
           </div>
         </div>

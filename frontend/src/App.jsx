@@ -4,12 +4,15 @@ import Sidebar from './components/Sidebar';
 import CupPreview from './components/CupPreview';
 import PromptOutput from './components/PromptOutput';
 import UsecasesPage from './components/UsecasesPage';
+import PopularPage from './components/PopularPage';
 import HistoryPage from './components/HistoryPage';
+import DocsPage from './components/DocsPage';
 import ScrollToTopButton from './components/ScrollToTopButton';
 import { supabase } from './supabaseClient';
 
 function App() {
   const [currentPage, setCurrentPage] = useState('home');
+  const [showPromptModal, setShowPromptModal] = useState(false);
   const [selectedTool, setSelectedTool] = useState(null);
   const [selectedBase, setSelectedBase] = useState(null);
   const [selectedDepartments, setSelectedDepartments] = useState([]);
@@ -143,12 +146,29 @@ Base Architecture: ${selectedBase.name}`);
             onRemoveTool={() => setSelectedTool(null)}
             onRemoveBase={() => setSelectedBase(null)}
             onRemoveDepartment={(deptId) => setSelectedDepartments(prev => prev.filter(d => d.id !== deptId))}
-          />
-          <PromptOutput
-            prompt={generatePrompt()}
-            selectedTool={selectedTool}
-            selectedBase={selectedBase}
-            selectedDepartments={selectedDepartments}
+            onGenerate={() => {
+              setShowPromptModal(true);
+              
+              // Save to LocalStorage history
+              const historyStr = localStorage.getItem('promptHistory');
+              let historyArr = [];
+              if (historyStr) {
+                try { historyArr = JSON.parse(historyStr); } catch(e){}
+              }
+              const newItem = {
+                id: Date.now().toString(),
+                title: `Auto-saved Prompt (${selectedTool ? selectedTool.name.split('—')[0].trim() : 'Unknown Tool'})`,
+                description: `บันทึกอัตโนมัติเมื่อ ${new Date().toLocaleString('th-TH')}`,
+                tool_used: selectedTool,
+                base_used: selectedBase,
+                departments_used: selectedDepartments,
+                generated_prompt: generatePrompt(),
+                date: new Date().toISOString(),
+                created_by: 'You (Local)'
+              };
+              historyArr.unshift(newItem); // Add to beginning
+              localStorage.setItem('promptHistory', JSON.stringify(historyArr));
+            }}
           />
         </div>
         )
@@ -159,10 +179,43 @@ Base Architecture: ${selectedBase.name}`);
           currentBase={selectedBase}
           currentDepartments={selectedDepartments}
         />
+      ) : currentPage === 'popular' ? (
+        <PopularPage />
+      ) : currentPage === 'docs' ? (
+        <DocsPage />
       ) : (
         <HistoryPage onClonePrompt={handleClonePrompt} />
       )}
       <ScrollToTopButton />
+
+      {/* Prompt Output Modal */}
+      {showPromptModal && (
+        <div className="modal-overlay" onClick={() => setShowPromptModal(false)} style={{ zIndex: 1000 }}>
+          <div 
+            className="modal-content glass-panel" 
+            style={{ 
+              maxWidth: '800px', 
+              width: '90%', 
+              maxHeight: '90vh', 
+              background: 'var(--bg-color)', 
+              padding: 0, 
+              display: 'flex', 
+              flexDirection: 'column' 
+            }} 
+            onClick={e => e.stopPropagation()}
+          >
+            <div style={{ flex: 1, overflowY: 'auto' }}>
+              <PromptOutput
+                prompt={generatePrompt()}
+                selectedTool={selectedTool}
+                selectedBase={selectedBase}
+                selectedDepartments={selectedDepartments}
+                onClose={() => setShowPromptModal(false)}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

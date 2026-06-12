@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Download, Copy, CheckCircle2 } from 'lucide-react';
+import { Download, Copy, CheckCircle2, X } from 'lucide-react';
 
-const PromptOutput = ({ prompt, selectedTool, selectedBase, selectedDepartments }) => {
+const PromptOutput = ({ prompt, selectedTool, selectedBase, selectedDepartments, onClose }) => {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
@@ -23,6 +23,9 @@ const PromptOutput = ({ prompt, selectedTool, selectedBase, selectedDepartments 
             </button>
             <button className="btn-secondary" style={{ padding: '0.5rem', borderRadius: '8px' }} onClick={handleCopy}>
               {copied ? <CheckCircle2 size={18} color="var(--primary-accent)" /> : <Copy size={18} />}
+            </button>
+            <button className="btn-icon" onClick={onClose} style={{ marginLeft: '0.5rem', width: '38px', height: '38px' }}>
+              <X size={20} />
             </button>
           </div>
         </div>

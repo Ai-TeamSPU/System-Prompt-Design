@@ -23,12 +23,23 @@ const TopNavbar = ({ currentPage, setCurrentPage }) => {
           Usecase
         </a>
         <a 
+          className={`nav-link ${currentPage === 'popular' ? 'active' : ''}`}
+          onClick={() => setCurrentPage('popular')}
+        >
+          🔥 Popular
+        </a>
+        <a 
           className={`nav-link ${currentPage === 'history' ? 'active' : ''}`}
           onClick={() => setCurrentPage('history')}
         >
           History
         </a>
-        <a className="nav-link">Docs</a>
+        <a 
+          className={`nav-link ${currentPage === 'docs' ? 'active' : ''}`}
+          onClick={() => setCurrentPage('docs')}
+        >
+          Docs
+        </a>
       </nav>
 
       <div className="navbar-actions">
