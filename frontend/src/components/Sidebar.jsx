@@ -1,8 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Layers, Database, Box, CheckCircle2 } from 'lucide-react';
 
-const Sidebar = ({ ingredients, selectedTool, setSelectedTool, selectedBase, setSelectedBase, selectedDepartments, toggleDepartment }) => {
+const Sidebar = ({ ingredients, selectedTool, setSelectedTool, selectedBase, setSelectedBase, selectedDepartments, toggleDepartment, selectedFeatures, toggleFeature }) => {
   const [activeTab, setActiveTab] = useState('tools');
+
+  useEffect(() => {
+    if (!selectedTool) {
+      setActiveTab('tools');
+    }
+  }, [selectedTool]);
 
   const handleDragStart = (e, type, item) => {
     e.dataTransfer.setData('application/json', JSON.stringify({ type, id: item.id }));
@@ -12,7 +18,8 @@ const Sidebar = ({ ingredients, selectedTool, setSelectedTool, selectedBase, set
   const tabs = [
     { id: 'tools', label: 'Ai Agent', icon: <img src="/Icon Ai Agent.svg" alt="Ai Agent" style={{ width: '20px', height: '20px' }} /> },
     { id: 'base', label: 'Company size', icon: <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>apartment</span> },
-    { id: 'departments', label: 'Departments', icon: <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>work</span> }
+    { id: 'departments', label: 'Department', icon: <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>work</span> },
+    { id: 'features', label: 'Feature', icon: <Layers size={20} /> }
   ];
 
   return (
@@ -20,16 +27,22 @@ const Sidebar = ({ ingredients, selectedTool, setSelectedTool, selectedBase, set
       <div className="header-title">
         <span>Select material</span>
         <span style={{ fontSize: '0.8rem', background: 'rgba(255,255,255,0.1)', padding: '0.2rem 0.6rem', borderRadius: '12px' }}>
-          3/3 หมวด
+          4/4 หมวด
         </span>
       </div>
       <p className="header-subtitle">
-        {!selectedTool ? "กรุณาเลือก Ai Agent ก่อนเป็นอันดับแรก" : "แตะเพื่อเพิ่ม หรือลากเครื่องมือลงไป"}
+        {!selectedTool ? "กรุณาเลือก Ai Agent ก่อนเป็นอันดับแรก" : 
+         !selectedBase ? "กรุณาเลือก Company size เป็นลำดับถัดไป" :
+         (!selectedDepartments || selectedDepartments.length === 0) ? "กรุณาเลือก Departments อย่างน้อย 1 แผนก" :
+         "แตะเพื่อเพิ่ม หรือลากเครื่องมือลงไป"}
       </p>
 
       <div className="tabs">
         {tabs.map(tab => {
-          const isDisabled = tab.id !== 'tools' && !selectedTool;
+          let isDisabled = false;
+          if (tab.id === 'base' && !selectedTool) isDisabled = true;
+          if (tab.id === 'departments' && (!selectedTool || !selectedBase)) isDisabled = true;
+          if (tab.id === 'features' && (!selectedTool || !selectedBase || !selectedDepartments || selectedDepartments.length === 0)) isDisabled = true;
           return (
             <div
               key={tab.id}
@@ -88,6 +101,23 @@ const Sidebar = ({ ingredients, selectedTool, setSelectedTool, selectedBase, set
             >
               <h4>{dept.name}</h4>
               <p>{dept.desc}</p>
+              {isSelected && <CheckCircle2 size={18} className="card-icon" />}
+            </div>
+          );
+        })}
+
+        {activeTab === 'features' && ingredients.features && ingredients.features.map(feature => {
+          const isSelected = selectedFeatures && selectedFeatures.some(f => f.id === feature.id);
+          return (
+            <div
+              key={feature.id}
+              className={`selection-card ${isSelected ? 'selected' : ''}`}
+              onClick={() => toggleFeature(feature)}
+              draggable
+              onDragStart={(e) => handleDragStart(e, 'features', feature)}
+            >
+              <h4>{feature.name}</h4>
+              <p>{feature.description}</p>
               {isSelected && <CheckCircle2 size={18} className="card-icon" />}
             </div>
           );

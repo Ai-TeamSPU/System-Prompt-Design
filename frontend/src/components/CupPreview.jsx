@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Sparkles, RefreshCw, AlertCircle } from 'lucide-react';
 
-const CupPreview = ({ selectedTool, selectedBase, selectedDepartments, onClear, onDropItem, onRemoveTool, onRemoveBase, onRemoveDepartment, onGenerate }) => {
+const CupPreview = ({ selectedTool, selectedBase, selectedDepartments, selectedFeatures, onClear, onDropItem, onRemoveTool, onRemoveBase, onRemoveDepartment, onRemoveFeature, onGenerate }) => {
   const [isDragOver, setIsDragOver] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
 
@@ -60,10 +60,10 @@ const CupPreview = ({ selectedTool, selectedBase, selectedDepartments, onClear, 
           flex: 1, 
           padding: '1.5rem', 
           overflowY: 'auto',
-          justifyContent: (!selectedTool && !selectedBase && selectedDepartments.length === 0) ? 'center' : 'flex-start'
+          justifyContent: (!selectedTool && !selectedBase && selectedDepartments.length === 0 && (!selectedFeatures || selectedFeatures.length === 0)) ? 'center' : 'flex-start'
         }}
       >
-        {(!selectedTool && !selectedBase && selectedDepartments.length === 0) ? (
+        {(!selectedTool && !selectedBase && selectedDepartments.length === 0 && (!selectedFeatures || selectedFeatures.length === 0)) ? (
           <>
             <Sparkles className="spin-icon" size={60} color="var(--primary-accent)" style={{ opacity: 0.8, marginBottom: '20px' }} />
             <p style={{ color: 'var(--text-secondary)' }}>Visual Preview</p>
@@ -88,6 +88,13 @@ const CupPreview = ({ selectedTool, selectedBase, selectedDepartments, onClear, 
               <div key={dept.id} className="tag">
                 <span style={{ color: '#ff003c' }}>Departments:</span> {dept.name.split(' ')[0]}
                 <button onClick={() => onRemoveDepartment(dept.id)}><X size={14} /></button>
+              </div>
+            ))}
+
+            {selectedFeatures && selectedFeatures.map(feature => (
+              <div key={feature.id} className="tag">
+                <span style={{ color: '#00ff73' }}>Feature:</span> {feature.name.split(' ')[0]}
+                <button onClick={() => onRemoveFeature(feature.id)}><X size={14} /></button>
               </div>
             ))}
           </div>

@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, LayoutGrid, Image as ImageIcon, X, Heart, Copy } from 'lucide-react';
+import { Plus, LayoutGrid, Image as ImageIcon, X, Heart, Copy, Trash2, AlertTriangle } from 'lucide-react';
 import UsecaseModal from './UsecaseModal';
 import { supabase } from '../supabaseClient';
 
-const UsecasesPage = ({ currentPrompt, currentTool, currentBase, currentDepartments }) => {
+const UsecasesPage = ({ currentPrompt, currentTool, currentBase, currentDepartments, currentFeatures, isAdmin }) => {
   const [usecases, setUsecases] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDetailUsecase, setSelectedDetailUsecase] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [likedUsecases, setLikedUsecases] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [deletingUsecase, setDeletingUsecase] = useState(null);
   const itemsPerPage = 8;
 
   useEffect(() => {
@@ -93,7 +94,8 @@ const UsecasesPage = ({ currentPrompt, currentTool, currentBase, currentDepartme
         generated_prompt: currentPrompt !== "Please select a Prompt Base." ? currentPrompt : null,
         tool_used: currentTool || null,
         base_used: currentBase || null,
-        departments_used: currentDepartments || []
+        departments_used: currentDepartments || [],
+        features_used: currentFeatures || []
       };
       const { error } = await supabase
         .from('usecases')
@@ -107,6 +109,33 @@ const UsecasesPage = ({ currentPrompt, currentTool, currentBase, currentDepartme
       }
     } catch (err) {
       console.error("Failed to add usecase", err);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!deletingUsecase) return;
+    
+    try {
+      const { error } = await supabase
+        .from('usecases')
+        .delete()
+        .eq('id', deletingUsecase.id);
+        
+      if (error) {
+        console.error("Failed to delete usecase:", error);
+        alert("Failed to delete usecase. Check console for details.");
+      } else {
+        setUsecases(prev => prev.filter(uc => uc.id !== deletingUsecase.id));
+        // Adjust pagination if needed
+        const totalPages = Math.ceil((usecases.length - 1) / itemsPerPage);
+        if (currentPage > totalPages && totalPages > 0) {
+          setCurrentPage(totalPages);
+        }
+      }
+    } catch (err) {
+      console.error("Delete error:", err);
+    } finally {
+      setDeletingUsecase(null);
     }
   };
 
@@ -155,7 +184,39 @@ const UsecasesPage = ({ currentPrompt, currentTool, currentBase, currentDepartme
                   </div>
                 )}
               </div>
-              <div className="usecase-content">
+              <div className="usecase-content" style={{ position: 'relative' }}>
+                {isAdmin && (
+                  <button 
+                    onClick={() => setDeletingUsecase(uc)}
+                    style={{
+                      position: 'absolute',
+                      top: '0',
+                      right: '0',
+                      background: 'rgba(255, 50, 50, 0.1)',
+                      border: '1px solid rgba(255, 50, 50, 0.3)',
+                      color: '#ff4444',
+                      padding: '0.4rem',
+                      borderRadius: '8px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      transition: 'all 0.2s ease',
+                      zIndex: 10
+                    }}
+                    title="Delete Usecase"
+                    onMouseEnter={e => {
+                      e.currentTarget.style.background = 'rgba(255, 50, 50, 0.2)';
+                      e.currentTarget.style.transform = 'scale(1.05)';
+                    }}
+                    onMouseLeave={e => {
+                      e.currentTarget.style.background = 'rgba(255, 50, 50, 0.1)';
+                      e.currentTarget.style.transform = 'scale(1)';
+                    }}
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                )}
                 <h3 className="usecase-title">{uc.title}</h3>
                 <p className="usecase-desc">{uc.description}</p>
                 <button 
@@ -244,6 +305,58 @@ const UsecasesPage = ({ currentPrompt, currentTool, currentBase, currentDepartme
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleAddUsecase}
       />
+
+      {/* Delete Confirmation Modal */}
+      {deletingUsecase && (
+        <div className="modal-overlay" onClick={() => setDeletingUsecase(null)} style={{ zIndex: 3000 }}>
+          <div 
+            className="modal-content glass-panel" 
+            onClick={e => e.stopPropagation()}
+            style={{
+              maxWidth: '400px',
+              padding: '2rem',
+              textAlign: 'center',
+              animation: 'popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
+            }}
+          >
+            <div style={{ 
+              width: '60px', 
+              height: '60px', 
+              borderRadius: '50%', 
+              background: 'rgba(255, 50, 50, 0.1)', 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center',
+              margin: '0 auto 1rem auto',
+              border: '1px solid rgba(255, 50, 50, 0.2)'
+            }}>
+              <AlertTriangle size={30} color="#ff4444" />
+            </div>
+            <h3 style={{ fontSize: '1.4rem', marginBottom: '0.5rem', color: '#ff4444' }}>Delete Usecase?</h3>
+            <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem', lineHeight: '1.5' }}>
+              Are you sure you want to delete <strong>"{deletingUsecase.title}"</strong>?<br/>
+              This action cannot be undone.
+            </p>
+            
+            <div style={{ display: 'flex', gap: '1rem' }}>
+              <button 
+                className="btn btn-secondary" 
+                style={{ flex: 1, padding: '0.8rem' }}
+                onClick={() => setDeletingUsecase(null)}
+              >
+                Cancel
+              </button>
+              <button 
+                className="action-btn" 
+                style={{ flex: 1, padding: '0.8rem', background: '#ff4444', color: 'white', boxShadow: '0 4px 15px rgba(255, 50, 50, 0.3)' }}
+                onClick={handleDelete}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Detail Modal */}
       {selectedDetailUsecase && (
