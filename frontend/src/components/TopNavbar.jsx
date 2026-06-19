@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Settings, User, LogOut } from 'lucide-react';
+import { Settings, User, LogOut, Sun, Moon } from 'lucide-react';
 
-const TopNavbar = ({ currentPage, setCurrentPage, isAdmin, setIsAdmin, onOpenAdminModal }) => {
+const TopNavbar = ({ currentPage, setCurrentPage, isAdmin, setIsAdmin, onOpenAdminModal, theme, setTheme }) => {
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   return (
     <div className="top-navbar">
@@ -47,7 +47,15 @@ const TopNavbar = ({ currentPage, setCurrentPage, isAdmin, setIsAdmin, onOpenAdm
         </a>
       </nav>
 
-      <div className="navbar-actions">
+      <div className="navbar-actions" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+        <button 
+          onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+          className="btn-icon"
+          title={theme === 'dark' ? "Switch to Light Mode" : "Switch to Dark Mode"}
+        >
+          {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+        </button>
+
         {isAdmin ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
             <span style={{ 

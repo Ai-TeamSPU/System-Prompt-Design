@@ -13,6 +13,28 @@
   --text-secondary: #94a3b8;
   --input-bg: rgba(0, 0, 0, 0.3);
   --surface-dark: rgba(0, 0, 0, 0.4);
+  --icon-filter: none;
+}
+
+[data-theme='light'] {
+  --primary-accent: #0066ff;
+  --secondary-accent: #ff003c;
+  --bg-color: #f8fafc;
+  --glass-bg: rgba(0, 0, 0, 0.05);
+  --glass-border: rgba(0, 0, 0, 0.1);
+  --glass-hover: rgba(0, 0, 0, 0.1);
+  --glass-active: rgba(0, 102, 255, 0.15);
+  --glass-active-border: rgba(0, 102, 255, 0.5);
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --input-bg: rgba(255, 255, 255, 0.8);
+  --surface-dark: rgba(255, 255, 255, 1);
+  --icon-filter: invert(1) brightness(0.2);
+}
+
+.theme-icon {
+  filter: var(--icon-filter);
+  transition: filter 0.3s ease;
 }
 
 * {

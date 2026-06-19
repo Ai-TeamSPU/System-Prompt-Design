@@ -16,7 +16,7 @@ const Sidebar = ({ ingredients, selectedTool, setSelectedTool, selectedBase, set
   };
 
   const tabs = [
-    { id: 'tools', label: 'Ai Agent', icon: <img src="/Icon Ai Agent.svg" alt="Ai Agent" style={{ width: '20px', height: '20px' }} /> },
+    { id: 'tools', label: 'Ai Agent', icon: <img src="/Icon Ai Agent.svg" alt="Ai Agent" className="theme-icon" style={{ width: '20px', height: '20px' }} /> },
     { id: 'base', label: 'Company size', icon: <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>apartment</span> },
     { id: 'departments', label: 'Department', icon: <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>work</span> },
     { id: 'features', label: 'Feature', icon: <Layers size={20} /> }

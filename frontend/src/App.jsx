@@ -18,11 +18,19 @@ function App() {
   const [isAdmin, setIsAdmin] = useState(() => {
     return localStorage.getItem('isAdmin') === 'true';
   });
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem('appTheme') || 'dark';
+  });
   const [selectedTool, setSelectedTool] = useState(null);
   const [selectedBase, setSelectedBase] = useState(null);
   const [selectedDepartments, setSelectedDepartments] = useState([]);
   const [selectedFeatures, setSelectedFeatures] = useState([]);
   const [ingredients, setIngredients] = useState(null);
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('appTheme', theme);
+  }, [theme]);
 
   useEffect(() => {
     async function loadData() {
@@ -235,6 +243,8 @@ Base Architecture: ${selectedBase.name}`);
         isAdmin={isAdmin}
         setIsAdmin={setIsAdmin}
         onOpenAdminModal={() => setShowAdminModal(true)}
+        theme={theme}
+        setTheme={setTheme}
       />
 
       {currentPage === 'home' ? (
