@@ -114,7 +114,8 @@ body {
   position: relative;
 }
 
-.nav-link:hover, .nav-link.active {
+.nav-link:hover,
+.nav-link.active {
   color: var(--primary-accent);
   text-shadow: 0 0 8px rgba(0, 240, 255, 0.4);
 }
@@ -175,9 +176,17 @@ body {
 }
 
 @keyframes pulseRotate {
-  0% { transform: scale(1) rotate(0deg); }
-  50% { transform: scale(1.15) rotate(15deg); }
-  100% { transform: scale(1) rotate(0deg); }
+  0% {
+    transform: scale(1) rotate(0deg);
+  }
+
+  50% {
+    transform: scale(1.15) rotate(15deg);
+  }
+
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
 }
 
 .glass-panel {
@@ -192,7 +201,9 @@ body {
   flex-direction: column;
 }
 
-.sidebar-col, .preview-col, .prompt-col {
+.sidebar-col,
+.preview-col,
+.prompt-col {
   flex: 1;
   overflow-y: auto;
   position: sticky;
@@ -370,10 +381,12 @@ body {
   0% {
     transform: perspective(400px) rotateY(0deg);
   }
+
   50% {
     transform: perspective(400px) rotateY(180deg) scale(1.1);
     filter: drop-shadow(0 0 10px var(--primary-accent));
   }
+
   100% {
     transform: perspective(400px) rotateY(360deg);
   }
@@ -696,7 +709,8 @@ body {
   background: rgba(0, 0, 0, 0.7);
   backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px);
-  transform: translateZ(0); /* Fix Chrome blurring rendering bug */
+  transform: translateZ(0);
+  /* Fix Chrome blurring rendering bug */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -708,6 +722,7 @@ body {
     opacity: 0;
     transform: scale(0.8) translateY(20px);
   }
+
   100% {
     opacity: 1;
     transform: scale(1) translateY(0);
@@ -854,8 +869,67 @@ body {
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* --- Delete Alert Gimmicks --- */
+@keyframes shake-danger {
+
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  20%,
+  60% {
+    transform: translateX(-5px) rotate(-2deg);
+  }
+
+  40%,
+  80% {
+    transform: translateX(5px) rotate(2deg);
+  }
+}
+
+@keyframes pulse-danger-icon {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 68, 68, 0.4);
+    transform: scale(1);
+  }
+
+  50% {
+    box-shadow: 0 0 0 20px rgba(255, 68, 68, 0);
+    transform: scale(1.1);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 68, 68, 0);
+    transform: scale(1);
+  }
+}
+
+.delete-alert-modal {
+  animation: modalPopIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.delete-icon-pulse {
+  animation: pulse-danger-icon 2s infinite ease-in-out;
+}
+
+.btn-delete-action {
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-delete-action:hover {
+  animation: shake-danger 0.5s ease-in-out;
+  background: #ff2222 !important;
+  box-shadow: 0 8px 25px rgba(255, 68, 68, 0.6) !important;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+  border-radius: 15px;
 }

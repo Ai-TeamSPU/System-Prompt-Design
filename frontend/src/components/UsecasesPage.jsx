@@ -116,14 +116,21 @@ const UsecasesPage = ({ currentPrompt, currentTool, currentBase, currentDepartme
     if (!deletingUsecase) return;
     
     try {
-      const { error } = await supabase
+      // Add .select() to force Supabase to return the deleted row.
+      // If RLS blocks it, data will be empty.
+      const { data, error } = await supabase
         .from('usecases')
         .delete()
-        .eq('id', deletingUsecase.id);
+        .eq('id', deletingUsecase.id)
+        .select();
         
       if (error) {
         console.error("Failed to delete usecase:", error);
         alert("Failed to delete usecase. Check console for details.");
+      } else if (!data || data.length === 0) {
+        // Silent failure due to RLS!
+        alert("ลบไม่สำเร็จ! กรุณาตรวจสอบ RLS Policy (DELETE) บนตาราง usecases ใน Supabase");
+        console.error("Delete blocked by Row Level Security (RLS). 0 rows affected.");
       } else {
         setUsecases(prev => prev.filter(uc => uc.id !== deletingUsecase.id));
         // Adjust pagination if needed
@@ -308,9 +315,9 @@ const UsecasesPage = ({ currentPrompt, currentTool, currentBase, currentDepartme
 
       {/* Delete Confirmation Modal */}
       {deletingUsecase && (
-        <div className="modal-overlay" onClick={() => setDeletingUsecase(null)} style={{ zIndex: 3000 }}>
+        <div className="modal-overlay" onClick={() => setDeletingUsecase(null)} style={{ zIndex: 2000 }}>
           <div 
-            className="modal-content glass-panel" 
+            className="modal-content glass-panel delete-alert-modal" 
             onClick={e => e.stopPropagation()}
             style={{
               maxWidth: '400px',
@@ -319,7 +326,7 @@ const UsecasesPage = ({ currentPrompt, currentTool, currentBase, currentDepartme
               animation: 'popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
             }}
           >
-            <div style={{ 
+            <div className="delete-icon-pulse" style={{ 
               width: '60px', 
               height: '60px', 
               borderRadius: '50%', 
@@ -347,7 +354,7 @@ const UsecasesPage = ({ currentPrompt, currentTool, currentBase, currentDepartme
                 Cancel
               </button>
               <button 
-                className="action-btn" 
+                className="action-btn btn-delete-action" 
                 style={{ flex: 1, padding: '0.8rem', background: '#ff4444', color: 'white', boxShadow: '0 4px 15px rgba(255, 50, 50, 0.3)' }}
                 onClick={handleDelete}
               >
