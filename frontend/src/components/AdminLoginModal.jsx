@@ -51,7 +51,7 @@ const AdminLoginModal = ({ onClose, onSuccess }) => {
             transition: 'all 0.2s ease'
           }}
           onMouseEnter={e => {
-            e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
+            e.currentTarget.style.background = 'var(--glass-hover)';
             e.currentTarget.style.color = 'var(--text-primary)';
           }}
           onMouseLeave={e => {
@@ -97,7 +97,7 @@ const AdminLoginModal = ({ onClose, onSuccess }) => {
                 padding: '1rem',
                 borderRadius: '12px',
                 border: `1px solid ${error ? 'rgba(255, 50, 50, 0.5)' : 'var(--glass-border)'}`,
-                background: 'rgba(255,255,255,0.03)',
+                background: 'var(--input-bg)',
                 color: 'var(--text-primary)',
                 fontSize: '1rem',
                 outline: 'none',
@@ -129,16 +129,10 @@ const AdminLoginModal = ({ onClose, onSuccess }) => {
 
           <button
             type="submit"
-            className="action-btn"
+            className="btn btn-primary"
             style={{
-              padding: '1rem',
-              fontSize: '1rem',
-              fontWeight: '600',
-              marginTop: '0.5rem',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              gap: '0.5rem'
+              width: '100%',
+              marginTop: '0.5rem'
             }}
           >
             Login

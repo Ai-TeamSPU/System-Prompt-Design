@@ -26,13 +26,13 @@ const DocsPage = () => {
         
         <ul style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem', paddingLeft: '1.5rem', color: 'var(--text-secondary)' }}>
           <li style={{ lineHeight: '1.6' }}>
-            <strong style={{ color: 'white' }}>1. 🤖 AI Agent (กำหนดตัวตนและสมอง):</strong> เลเยอร์แรกคือการเลือก "สมอง" หรือ AI Model ที่เหมาะสมกับงาน (เช่น GPT-4o, Claude 3.5 Sonnet, Gemini 1.5 Pro) AI แต่ละตัวมีความถนัดและสไตล์การตอบคำถามที่ต่างกัน การระบุ Agent ที่ชัดเจนจะช่วยกำหนดทิศทางเบื้องต้นของผลลัพธ์
+            <strong style={{ color: 'var(--text-primary)' }}>1. 🤖 AI Agent (กำหนดตัวตนและสมอง):</strong> เลเยอร์แรกคือการเลือก "สมอง" หรือ AI Model ที่เหมาะสมกับงาน (เช่น GPT-4o, Claude 3.5 Sonnet, Gemini 1.5 Pro) AI แต่ละตัวมีความถนัดและสไตล์การตอบคำถามที่ต่างกัน การระบุ Agent ที่ชัดเจนจะช่วยกำหนดทิศทางเบื้องต้นของผลลัพธ์
           </li>
           <li style={{ lineHeight: '1.6' }}>
-            <strong style={{ color: 'white' }}>2. 🏢 Company Size / Context (กำหนดบริบทของธุรกิจ):</strong> เลเยอร์ที่สองคือ "บริบทขององค์กร" (เช่น Startup, SME, Enterprise) ขนาดขององค์กรมีผลต่อทรัพยากร งบประมาณ และวิธีการแก้ปัญหา การบอก AI ว่าเราอยู่ในองค์กรขนาดไหน จะทำให้คำแนะนำที่ได้นั้นนำไปปฏิบัติจริงได้ (Actionable) และตรงกับความเป็นจริงมากขึ้น
+            <strong style={{ color: 'var(--text-primary)' }}>2. 🏢 Company Size / Context (กำหนดบริบทของธุรกิจ):</strong> เลเยอร์ที่สองคือ "บริบทขององค์กร" (เช่น Startup, SME, Enterprise) ขนาดขององค์กรมีผลต่อทรัพยากร งบประมาณ และวิธีการแก้ปัญหา การบอก AI ว่าเราอยู่ในองค์กรขนาดไหน จะทำให้คำแนะนำที่ได้นั้นนำไปปฏิบัติจริงได้ (Actionable) และตรงกับความเป็นจริงมากขึ้น
           </li>
           <li style={{ lineHeight: '1.6' }}>
-            <strong style={{ color: 'white' }}>3. 💼 Departments (กำหนดฝ่าย/ผู้เชี่ยวชาญเฉพาะทาง):</strong> เลเยอร์สุดท้ายคือ "ความเชี่ยวชาญ" (เช่น Marketing, HR, Engineering) การเลือกแผนกจะเป็นการกำหนด Role ให้ AI สวมบทบาทเป็นผู้เชี่ยวชาญในสายงานนั้นๆ เพื่อให้ได้คำศัพท์เฉพาะทาง (Jargon) และมุมมองการแก้ปัญหาที่ตรงจุดที่สุด
+            <strong style={{ color: 'var(--text-primary)' }}>3. 💼 Departments (กำหนดฝ่าย/ผู้เชี่ยวชาญเฉพาะทาง):</strong> เลเยอร์สุดท้ายคือ "ความเชี่ยวชาญ" (เช่น Marketing, HR, Engineering) การเลือกแผนกจะเป็นการกำหนด Role ให้ AI สวมบทบาทเป็นผู้เชี่ยวชาญในสายงานนั้นๆ เพื่อให้ได้คำศัพท์เฉพาะทาง (Jargon) และมุมมองการแก้ปัญหาที่ตรงจุดที่สุด
           </li>
         </ul>
       </div>
@@ -59,7 +59,7 @@ const DocsPage = () => {
           <span style={{ fontSize: '0.85rem', opacity: 0.7 }}>(รอนำไฟล์ .gif หรือ .mp4 มาใส่ตรงนี้เพื่อความสมบูรณ์)</span>
         </div>
 
-        <h3 style={{ color: 'white', marginTop: '1rem' }}>ขั้นตอนการสร้าง Prompt:</h3>
+        <h3 style={{ color: 'var(--text-primary)', marginTop: '1rem' }}>ขั้นตอนการสร้าง Prompt:</h3>
         <ol style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', paddingLeft: '1.5rem', color: 'var(--text-secondary)' }}>
           <li><strong>เลือกเมนูด้านซ้าย (Sidebar):</strong> คลิกเลือกหมวดหมู่ที่ต้องการ (AI Agent, Company Size, Departments)</li>
           <li><strong>ลาก (Drag):</strong> คลิกค้างที่การ์ดตัวเลือกที่คุณต้องการ (เช่น "Claude 3.5 Sonnet" หรือ "Marketing")</li>
@@ -75,13 +75,13 @@ const DocsPage = () => {
         </h2>
         <ul style={{ display: 'flex', flexDirection: 'column', gap: '1rem', paddingLeft: '1.5rem', color: 'var(--text-secondary)' }}>
           <li style={{ lineHeight: '1.6' }}>
-            <strong style={{ color: 'white' }}>Clear Selection:</strong> หากคุณเลือกลากผิด หรือต้องการเปลี่ยนหัวข้อ สามารถกดปุ่ม <strong>"ล้างตัวเลือก" (Clear)</strong> ด้านล่างแก้วกาแฟได้ตลอดเวลา
+            <strong style={{ color: 'var(--text-primary)' }}>Clear Selection:</strong> หากคุณเลือกลากผิด หรือต้องการเปลี่ยนหัวข้อ สามารถกดปุ่ม <strong>"ล้างตัวเลือก" (Clear)</strong> ด้านล่างแก้วกาแฟได้ตลอดเวลา
           </li>
           <li style={{ lineHeight: '1.6' }}>
-            <strong style={{ color: 'white' }}>Prompt Feed & History:</strong> คุณสามารถเข้าไปดูไอเดีย Prompt ของคนอื่นๆ ในเมนู <code>Popular</code> และ <code>History</code> เพื่อนำมาเป็นแบบอย่าง หรือกดปุ่ม Clone เพื่อนำมาดัดแปลงเป็นของตัวเองได้
+            <strong style={{ color: 'var(--text-primary)' }}>Prompt Feed & History:</strong> คุณสามารถเข้าไปดูไอเดีย Prompt ของคนอื่นๆ ในเมนู <code>Popular</code> และ <code>History</code> เพื่อนำมาเป็นแบบอย่าง หรือกดปุ่ม Clone เพื่อนำมาดัดแปลงเป็นของตัวเองได้
           </li>
           <li style={{ lineHeight: '1.6' }}>
-            <strong style={{ color: 'white' }}>Share Usecase:</strong> หากคุณสร้าง Prompt ที่ทำงานได้ดีเยี่ยม อย่าลืมกด <strong>"Add Prompt Usecase"</strong> เพื่อแชร์ให้ทีมหรือคอมมูนิตี้ได้นำไปใช้งานต่อ!
+            <strong style={{ color: 'var(--text-primary)' }}>Share Usecase:</strong> หากคุณสร้าง Prompt ที่ทำงานได้ดีเยี่ยม อย่าลืมกด <strong>"Add Prompt Usecase"</strong> เพื่อแชร์ให้ทีมหรือคอมมูนิตี้ได้นำไปใช้งานต่อ!
           </li>
         </ul>
       </div>

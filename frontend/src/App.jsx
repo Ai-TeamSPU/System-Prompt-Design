@@ -360,6 +360,14 @@ Base Architecture: ${selectedBase.name}`);
           }}
         />
       )}
+
+      <footer className="app-footer">
+        <p>
+          © 2026 <span className="university-name">Sripatum University</span>. All Rights Reserved.
+          <span className="separator"> | </span>
+          Website Concept by P'Dew (Leader data Team) & Develop by Maetha (Data Team)
+        </p>
+      </footer>
     </div>
   );
 }

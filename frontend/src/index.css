@@ -14,6 +14,7 @@
   --input-bg: rgba(0, 0, 0, 0.3);
   --surface-dark: rgba(0, 0, 0, 0.4);
   --icon-filter: none;
+  --modal-bg: #111a2c;
 }
 
 [data-theme='light'] {
@@ -30,6 +31,7 @@
   --input-bg: rgba(255, 255, 255, 0.8);
   --surface-dark: rgba(255, 255, 255, 1);
   --icon-filter: invert(1) brightness(0.2);
+  --modal-bg: #ffffff;
 }
 
 .theme-icon {
@@ -757,7 +759,7 @@ body {
   max-height: 90vh;
   overflow-y: auto;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-  background: #111a2c;
+  background: var(--modal-bg);
   animation: modalPopIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
 
@@ -954,4 +956,53 @@ body {
   box-shadow: 0 8px 25px rgba(255, 68, 68, 0.6) !important;
   text-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
   border-radius: 15px;
+}
+
+/* --- App Footer --- */
+.app-footer {
+  text-align: center;
+  padding: 1.5rem;
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid var(--glass-border);
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  line-height: 1.6;
+  margin-top: auto; /* Push to bottom of flex container */
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.app-footer p {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+
+.app-footer .university-name {
+  color: var(--text-primary);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.app-footer .separator {
+  margin: 0 0.8rem;
+  color: var(--glass-border);
+  font-weight: 300;
+}
+
+@media (max-width: 768px) {
+  .app-footer .separator {
+    display: none;
+  }
+  .app-footer p {
+    flex-direction: column;
+    gap: 0.3rem;
+  }
 }
